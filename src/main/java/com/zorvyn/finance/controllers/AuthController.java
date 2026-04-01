@@ -1,5 +1,7 @@
 package com.zorvyn.finance.controllers;
 
+import com.zorvyn.finance.dtos.AuthenticationRequest;
+import com.zorvyn.finance.dtos.AuthenticationResponse;
 import com.zorvyn.finance.dtos.UserRegistrationRequest;
 import com.zorvyn.finance.dtos.UserResponse;
 import com.zorvyn.finance.services.UserService;
@@ -23,5 +25,11 @@ public class AuthController {
     public ResponseEntity<UserResponse> register(@Valid @RequestBody UserRegistrationRequest request) {
         UserResponse response = userService.registerUser(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody AuthenticationRequest request) {
+        AuthenticationResponse response = userService.authenticate(request);
+        return ResponseEntity.ok(response);
     }
 }
