@@ -1,15 +1,19 @@
 package com.zorvyn.finance.services;
 
+import com.zorvyn.finance.dtos.DashboardSummaryResponse;
 import com.zorvyn.finance.dtos.RecordRequest;
 import com.zorvyn.finance.dtos.RecordResponse;
 import com.zorvyn.finance.entities.FinancialRecord;
+import com.zorvyn.finance.entities.TransactionType;
 import com.zorvyn.finance.entities.User;
 import com.zorvyn.finance.repositories.FinancialRecordRepository;
 import com.zorvyn.finance.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,6 +71,32 @@ public class FinancialRecordService {
                 .notes(record.getNotes())
                 .createdBy(record.getCreatedBy().getEmail())
                 .createdAt(record.getCreatedAt())
+                .build();
+    }
+
+    public DashboardSummaryResponse getDashboardSummary() {
+        BigDecimal totalIncome = recordRepository.sumByType(TransactionType.INCOME);
+        BigDecimal totalExpenses = recordRepository.sumByType(TransactionType.EXPENSE);
+
+        // if no records exist yet
+        totalIncome = (totalIncome != null) ? totalIncome : BigDecimal.ZERO;
+        totalExpenses = (totalExpenses != null) ? totalExpenses : BigDecimal.ZERO;
+
+        BigDecimal netBalance = totalIncome.subtract(totalExpenses);
+
+        // map the Category totals from List<Object[]> to a clean map
+        Map<String, BigDecimal> categoryMap = recordRepository.getCategoryTotals()
+                .stream()
+                .collect(java.util.stream.Collectors.toMap(
+                        obj -> obj[0].toString(),
+                        obj -> (BigDecimal) obj[1]
+                ));
+
+        return DashboardSummaryResponse.builder()
+                .totalIncome(totalIncome)
+                .totalExpenses(totalExpenses)
+                .netBalance(netBalance)
+                .categoryTotals(categoryMap)
                 .build();
     }
 }

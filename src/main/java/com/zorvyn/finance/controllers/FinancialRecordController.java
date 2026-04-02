@@ -1,5 +1,6 @@
 package com.zorvyn.finance.controllers;
 
+import com.zorvyn.finance.dtos.DashboardSummaryResponse;
 import com.zorvyn.finance.dtos.RecordRequest;
 import com.zorvyn.finance.dtos.RecordResponse;
 import com.zorvyn.finance.services.FinancialRecordService;
@@ -51,5 +52,12 @@ public class FinancialRecordController {
     public ResponseEntity<Void> deleteRecord(@PathVariable Long id) {
         recordService.deleteRecord(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // Admins and Analysts can view the dashboard summary
+    @GetMapping("/summary")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
+    public ResponseEntity<DashboardSummaryResponse> getSummary() {
+        return ResponseEntity.ok(recordService.getDashboardSummary());
     }
 }
