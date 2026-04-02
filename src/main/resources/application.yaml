@@ -3,7 +3,7 @@ spring:
     name: finance-access-backend
 
   datasource:
-    url: jdbc:mysql://localhost:3306/financedb?useSSL=false
+    url: jdbc:mysql://localhost:3306/financedb?allowPublicKeyRetrieval=true&useSSL=false
     username: root
     password: Vansh@sql16 # update with your MySQL credentials
     driver-class-name: com.mysql.cj.jdbc.Driver
