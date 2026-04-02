@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/financedb?allowPublicKeyRetrieval=true&useSSL=false
     username: root
-    password: Vansh@sql16 # update with your MySQL credentials
+    password: Vansh@sql16 # please change this to your actual MySQL password
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
