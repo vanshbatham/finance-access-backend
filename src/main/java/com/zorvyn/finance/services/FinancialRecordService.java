@@ -3,15 +3,19 @@ package com.zorvyn.finance.services;
 import com.zorvyn.finance.dtos.DashboardSummaryResponse;
 import com.zorvyn.finance.dtos.RecordRequest;
 import com.zorvyn.finance.dtos.RecordResponse;
+import com.zorvyn.finance.entities.Category;
 import com.zorvyn.finance.entities.FinancialRecord;
 import com.zorvyn.finance.entities.TransactionType;
 import com.zorvyn.finance.entities.User;
 import com.zorvyn.finance.repositories.FinancialRecordRepository;
 import com.zorvyn.finance.repositories.UserRepository;
+import com.zorvyn.finance.specifications.FinancialRecordSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -98,5 +102,14 @@ public class FinancialRecordService {
                 .netBalance(netBalance)
                 .categoryTotals(categoryMap)
                 .build();
+    }
+
+    public List<RecordResponse> filterRecords(LocalDate startDate, LocalDate endDate, TransactionType type, Category category) {
+        Specification<FinancialRecord> spec = FinancialRecordSpecification.filterRecords(startDate, endDate, type, category);
+
+        return recordRepository.findAll(spec)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 }

@@ -3,6 +3,8 @@ package com.zorvyn.finance.controllers;
 import com.zorvyn.finance.dtos.DashboardSummaryResponse;
 import com.zorvyn.finance.dtos.RecordRequest;
 import com.zorvyn.finance.dtos.RecordResponse;
+import com.zorvyn.finance.entities.Category;
+import com.zorvyn.finance.entities.TransactionType;
 import com.zorvyn.finance.services.FinancialRecordService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -59,5 +62,16 @@ public class FinancialRecordController {
     @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     public ResponseEntity<DashboardSummaryResponse> getSummary() {
         return ResponseEntity.ok(recordService.getDashboardSummary());
+    }
+
+    @GetMapping("/filter")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST', 'VIEWER')")
+    public ResponseEntity<List<RecordResponse>> filterRecords(
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) TransactionType type,
+            @RequestParam(required = false) Category category) {
+
+        return ResponseEntity.ok(recordService.filterRecords(startDate, endDate, type, category));
     }
 }
